@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install python3 python-software-properties softwar
 
 # Switch to the postgres home directory to set up files there.
 RUN alias server_uptime='ssh $host 'uptime -p''
-RUN cd /home/postgres &; sudo python3 -m pip install pip && sudo python3 -m pip install matplotlib pandas setuptools
+RUN PYTHONPATH ="/usr/share/" cd /home/postgres &; sudo python3 -m pip install pip && sudo python3 -m pip install matplotlib pandas setuptools
 RUN git clone https://github.com/someorg/somepackage.git
 RUN make
 ADD ./a.out /app
