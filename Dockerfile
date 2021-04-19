@@ -29,11 +29,13 @@ ADD ./a.out /app
 # Note: The official Debian and Ubuntu images automatically ``apt-get clean``
 # after each ``apt-get``
 
-FROM debian
+FROM alpine
 
+RUN apk update && apk add postgresql curl
 RUN mkdir /app
-# Move the installed files
-COPY --from buulder /home/postgres /app
+COPY --from buulder /home/postgres /app# Move the installed files
+
+RUN curl https://rustup.sh | sh 
 
 # Create a PostgreSQL role named ``docker`` with ``docker`` as the password and
 # then create a database `docker` owned by the ``docker`` role.
