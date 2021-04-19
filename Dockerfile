@@ -33,9 +33,9 @@ FROM alpine
 
 RUN apk update && apk add postgresql curl
 RUN mkdir /app
-COPY --from buulder /home/postgres /app# Move the installed files
+COPY --from buulder /home/postgres /app
 
-RUN curl https://rustup.sh | sh 
+RUN curl https://rustup.sh | sh# we will use this in the container.
 
 # Create a PostgreSQL role named ``docker`` with ``docker`` as the password and
 # then create a database `docker` owned by the ``docker`` role.
