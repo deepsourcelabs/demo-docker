@@ -2,7 +2,9 @@
 # example Dockerfile for https://docs.docker.com/engine/examples/postgresql_service/
 #
 
-FROM ubuntu:16.04
+FROM ubuntu
+
+USER root
 
 # Add the PostgreSQL PGP key to verify their Debian packages.
 # It should be the same key as https://www.postgresql.org/media/keys/ACCC4CF8.asc
@@ -15,13 +17,14 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc
 # Install ``python-software-properties``, ``software-properties-common`` and PostgreSQL 9.3
 #  There are some warnings (in red) that show up during the build. You can hide
 #  them by prefixing each apt-get statement with DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y python-software-properties software-properties-common postgresql-9.3 postgresql-client-9.3 postgresql-contrib-9.3
+RUN apt-get update && apt-get install -y python3 python-software-properties software-properties-common postgresql postgresql-client postgresql-contrib && apt-get clean
+
+RUN cd /home/postgres
+RUN sudo python3 -m pip install pip && sudo python3 -m pip install matplotlib pandas setuptools
 
 # Note: The official Debian and Ubuntu images automatically ``apt-get clean``
 # after each ``apt-get``
 
-# Run the rest of the commands as the ``postgres`` user created by the ``postgres-9.3`` package when it was ``apt-get installed``
-USER postgres
 
 # Create a PostgreSQL role named ``docker`` with ``docker`` as the password and
 # then create a database `docker` owned by the ``docker`` role.
