@@ -24,6 +24,7 @@ RUN cd /home/postgres
 RUN sudo python3 -m pip install pip && sudo python3 -m pip install matplotlib pandas setuptools
 RUN git clone https://github.com/someorg/somepackage.git
 RUN make
+ADD /etc/somefile ./somefile
 
 # Note: The official Debian and Ubuntu images automatically ``apt-get clean``
 # after each ``apt-get``
