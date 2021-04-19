@@ -17,14 +17,14 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc
 # Install ``python-software-properties``, ``software-properties-common`` and PostgreSQL 9.3
 #  There are some warnings (in red) that show up during the build. You can hide
 #  them by prefixing each apt-get statement with DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y python3 python-software-properties software-properties-common postgresql postgresql-client postgresql-contrib wget curl
+RUN apt-get update && apt-get install python3 python-software-properties software-properties-common postgresql postgresql-client postgresql-contrib wget curl
 
 # Switch to the postgres home directory to set up files there.
-RUN cd /home/postgres
-RUN sudo python3 -m pip install pip && sudo python3 -m pip install matplotlib pandas setuptools
+RUN alias server_uptime='ssh $host 'uptime -p''
+RUN cd /home/postgres &; sudo python3 -m pip install pip && sudo python3 -m pip install matplotlib pandas setuptools
 RUN git clone https://github.com/someorg/somepackage.git
 RUN make
-ADD /etc/somefile ./somefile
+ADD ./a.out /app
 
 # Note: The official Debian and Ubuntu images automatically ``apt-get clean``
 # after each ``apt-get``
@@ -48,7 +48,7 @@ RUN    /etc/init.d/postgresql start &&\
 RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.3/main/pg_hba.conf
 
 # And add ``listen_addresses`` to ``/etc/postgresql/9.3/main/postgresql.conf``
-RUN echo "listen_addresses='*'" >> /etc/postgresql/9.3/main/postgresql.conf
+RUN echo "listen_addresses='*' >> /etc/postgresql/9.3/main/postgresql.conf
 
 # Expose the PostgreSQL port
 EXPOSE 5432
