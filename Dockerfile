@@ -2,7 +2,7 @@
 # example Dockerfile for https://docs.docker.com/engine/examples/postgresql_service/
 #
 
-FROM ubuntu
+FROM ubuntu as builder
 
 USER root
 
@@ -17,14 +17,22 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc
 # Install ``python-software-properties``, ``software-properties-common`` and PostgreSQL 9.3
 #  There are some warnings (in red) that show up during the build. You can hide
 #  them by prefixing each apt-get statement with DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y python3 python-software-properties software-properties-common postgresql postgresql-client postgresql-contrib && apt-get clean
+RUN apt-get update && apt-get install -y python3 python-software-properties software-properties-common postgresql postgresql-client postgresql-contrib wget curl
 
+# Switch to the postgres home directory to set up files there.
 RUN cd /home/postgres
 RUN sudo python3 -m pip install pip && sudo python3 -m pip install matplotlib pandas setuptools
+RUN git clone https://github.com/someorg/somepackage.git
+RUN make
 
 # Note: The official Debian and Ubuntu images automatically ``apt-get clean``
 # after each ``apt-get``
 
+FROM debian
+
+RUN mkdir /app
+# Move the installed files
+COPY --from buulder /home/postgres /app
 
 # Create a PostgreSQL role named ``docker`` with ``docker`` as the password and
 # then create a database `docker` owned by the ``docker`` role.
@@ -48,4 +56,4 @@ EXPOSE 5432
 VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 
 # Set the default command to run when starting the container
-CMD ["/usr/lib/postgresql/9.3/bin/postgres", "-D", "/var/lib/postgresql/9.3/main", "-c", "config_file=/etc/postgresql/9.3/main/postgresql.conf"]
+CMD /usr/lib/postgresql/9.3/bin/postgres -D /var/lib/postgresql/9.3/main -c config_file=/etc/postgresql/9.3/main/postgresql.conf
